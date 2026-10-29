@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMI · Código QR</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root { --bg:#ffffff; --ink:#0f172a; --accent:#ea580c; --muted:#475569; }
+  html, body { height:100%; margin:0; background:var(--bg); color:var(--ink); font-family:'Inter', system-ui, sans-serif; }
+  body { display:flex; align-items:center; justify-content:center; padding:0 16px; }
+  .wrap { display:flex; flex-direction:column; align-items:center; gap:18px; text-align:center; padding:24px 0; }
+  .brand { font-weight:800; font-size:44px; color:var(--accent); letter-spacing:.02em; }
+  h1 { margin:0; font-size:26px; font-weight:800; }
+  #qr { padding:18px; background:#fff; border:3px solid var(--ink); border-radius:20px; }
+  #qr img, #qr canvas { width:min(70vw, 60vh, 420px) !important; height:auto !important; display:block; }
+  p { margin:0; color:var(--muted); font-size:17px; font-weight:500; }
+  #link { font-size:15px; color:var(--ink); word-break:break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">PMI</div>
+  <h1>Escaneá y probá R.A.U.L.</h1>
+  <div id="qr" role="img" aria-label="Código QR para abrir la plataforma PMI"></div>
+  <p>Abrí la cámara del celular y apuntá al código</p>
+  <p id="link"></p>
+</div>
+<script>
+  // El QR apunta automáticamente a la página principal del sitio (index.html en esta misma carpeta)
+  var url = location.href.replace(/qr\.html.*$/, '').split('#')[0];
+  document.getElementById('link').textContent = url;
+  new QRCode(document.getElementById('qr'), {
+    text: url, width: 840, height: 840,
+    colorDark: '#0f172a', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+</body>
+</html>

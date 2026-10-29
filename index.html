@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>PMI Mantenimiento Industrial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'] },
+        colors: {
+          industrial: { 50:'#f0f4f8',100:'#d9e2ec',500:'#102a43',600:'#0b69a3',700:'#035388',800:'#013e63',900:'#00213b' },
+          techOrange: { 400:'#fb923c', 500:'#f97316', 600:'#ea580c' },
+          techGreen: { 500:'#10b981', 600:'#059669' }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  /* Layout: app de una columna en celular con barra inferior; en computadora, barra lateral como el prototipo original */
+  :root {
+    --bg: #020617;        /* slate-950 */
+    --panel: #0f172a;     /* slate-900 */
+    --line: #1e293b;      /* slate-800 */
+    --text: #f1f5f9;      /* slate-100 */
+    --muted: #94a3b8;     /* slate-400 */
+    --accent: #f97316;    /* techOrange-500 */
+    color-scheme: dark;
+  }
+  html, body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif; }
+  body { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--panel); }
+  .gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .ico { width: 1.25em; height: 1.25em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  h1, h2, h3 { text-wrap: balance; }
+  .label { letter-spacing: .06em; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 10px; }
+  .bottom-nav { padding-bottom: max(6px, env(safe-area-inset-bottom, 0px)); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  .main-pad { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  @media (min-width: 768px) { .main-pad { padding-bottom: 32px; } }
+  .typing span { display:inline-block; width:7px; height:7px; margin:0 2px; border-radius:50%; background: var(--muted); animation: blink 1.2s infinite; }
+  .typing span:nth-child(2){ animation-delay:.2s } .typing span:nth-child(3){ animation-delay:.4s }
+  @keyframes blink { 0%,80%,100%{opacity:.25} 40%{opacity:1} }
+  .pulse-dot { animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  @media (prefers-reduced-motion: reduce) { .typing span, .pulse-dot { animation: none; } * { scroll-behavior: auto !important; } }
+  .nav-btn[aria-current="page"] { color: var(--accent); }
+  .side-btn[aria-current="page"] { background: rgba(30,41,59,.7); border-color: var(--accent); color: #fdba74; }
+</style>
+<style>html,body{margin:0} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px)}</style>
+</head>
+<body>
+
+
+<!-- Iconos (SVG propios, sin dependencias externas) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M9 7h6"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 4a3 3 0 0 0-6 1 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1z"/><path d="M12 4a3 3 0 0 1 6 1 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/><path d="M7 11l4-9a3 3 0 0 1 3 3v4h5.7a2 2 0 0 1 2 2.3l-1.4 9a2 2 0 0 1-2 1.7H7z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+</svg>
+
+<div class="min-h-full flex flex-col">
+
+  <!-- ENCABEZADO -->
+  <header class="sticky z-40 bg-slate-900 border-b border-slate-800 shadow-lg" style="top: env(safe-area-inset-top, 0px)">
+    <div class="gutter py-3 flex items-center justify-between gap-3">
+      <button onclick="go('inicio')" class="flex items-center gap-3 text-left min-w-0" aria-label="Ir al inicio">
+        <span class="bg-gradient-to-br from-industrial-600 to-industrial-800 border border-industrial-600 text-white px-2.5 py-2 rounded-xl font-black flex items-center gap-1.5 shadow-md">
+          <svg class="ico text-techOrange-500"><use href="#i-gear"/></svg>
+          <span class="text-lg leading-none">PMI</span>
+        </span>
+        <span class="min-w-0">
+          <span class="block font-bold text-sm sm:text-base text-slate-100 truncate">Mantenimiento Industrial</span>
+          <span class="block text-xs text-slate-400 truncate">Planta Autopartes · Sector B</span>
+        </span>
+      </button>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span class="hidden sm:inline-flex items-center gap-1.5 text-xs bg-slate-800 border border-slate-700 text-emerald-400 px-2.5 py-1 rounded-full">
+          <svg class="ico" style="width:14px;height:14px"><use href="#i-lock"/></svg> Datos protegidos
+        </span>
+        <span class="text-[11px] font-bold uppercase label bg-techOrange-600/20 text-techOrange-400 border border-techOrange-500/40 px-2 py-1 rounded-full">Demo</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1">
+
+    <!-- BARRA LATERAL (computadora) -->
+    <nav class="hidden md:flex flex-col gap-2 w-64 flex-shrink-0 bg-slate-900 border-r border-slate-800 p-3 sticky self-start" style="top: calc(65px + env(safe-area-inset-top, 0px)); height: calc(100vh - 65px)" aria-label="Secciones">
+      <button class="side-btn flex items-center gap-3 px-4 py-3.5 rounded-r-xl border-l-2 border-transparent text-slate-300 font-semibold hover:bg-slate-800/50 text-left" data-tab="inicio" onclick="go('inicio')"><svg class="ico"><use href="#i-home"/></svg>Inicio</button>
+      <button class="side-btn flex items-center gap-3 px-4 py-3.5 rounded-r-xl border-l-2 border-transparent text-slate-300 font-semibold hover:bg-slate-800/50 text-left" data-tab="raul" onclick="go('raul')"><svg class="ico text-techOrange-500"><use href="#i-chat"/></svg>Preguntar a R.A.U.L.</button>
+      <button class="side-btn flex items-center gap-3 px-4 py-3.5 rounded-r-xl border-l-2 border-transparent text-slate-300 font-semibold hover:bg-slate-800/50 text-left" data-tab="manuales" onclick="go('manuales')"><svg class="ico text-blue-400"><use href="#i-book"/></svg>Manuales en español</button>
+      <button class="side-btn flex items-center gap-3 px-4 py-3.5 rounded-r-xl border-l-2 border-transparent text-slate-300 font-semibold hover:bg-slate-800/50 text-left" data-tab="wiki" onclick="go('wiki')"><svg class="ico text-purple-400"><use href="#i-brain"/></svg>Saber de planta</button>
+      <button class="side-btn flex items-center gap-3 px-4 py-3.5 rounded-r-xl border-l-2 border-transparent text-slate-300 font-semibold hover:bg-slate-800/50 text-left" data-tab="repuestos" onclick="go('repuestos')"><svg class="ico text-amber-400"><use href="#i-box"/></svg>Repuestos</button>
+      <div class="mt-auto p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 leading-relaxed">
+        Este es un prototipo de demostración. Los datos son de ejemplo.
+      </div>
+    </nav>
+
+    <main class="flex-1 min-w-0 main-pad">
+
+      <!-- ===== INICIO ===== -->
+      <section id="view-inicio" class="gutter py-6">
+        <div class="max-w-3xl mx-auto flex flex-col gap-6">
+          <div class="flex flex-col gap-2">
+            <p class="text-sm font-semibold text-techOrange-400">Hola 👋 Bienvenido a PMI</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-100 leading-tight">¿Qué necesitas resolver hoy?</h1>
+            <p class="text-slate-400 leading-relaxed">Toca una opción. No hace falta registrarse ni saber de tecnología.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onclick="go('raul')" class="group text-left bg-slate-900 border border-techOrange-500/60 rounded-2xl p-5 flex gap-4 items-start hover:bg-slate-800/70 transition-colors sm:col-span-2">
+              <span class="w-12 h-12 rounded-xl bg-techOrange-500/20 text-techOrange-500 flex items-center justify-center flex-shrink-0"><svg class="ico" style="width:26px;height:26px"><use href="#i-chat"/></svg></span>
+              <span class="flex flex-col gap-1">
+                <span class="font-bold text-lg text-slate-100">Preguntar a R.A.U.L.</span>
+                <span class="text-sm text-slate-400 leading-relaxed">Cuéntale qué le pasa a la máquina, como se lo dirías a un compañero. Te responde con los pasos a seguir.</span>
+                <span class="text-sm font-semibold text-techOrange-400 mt-1">Empezar consulta →</span>
+              </span>
+            </button>
+            <button onclick="go('manuales')" class="text-left bg-slate-900 border border-slate-800 rounded-2xl p-5 flex gap-4 items-start hover:bg-slate-800/70 transition-colors">
+              <span class="w-12 h-12 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center flex-shrink-0"><svg class="ico" style="width:24px;height:24px"><use href="#i-book"/></svg></span>
+              <span class="flex flex-col gap-1">
+                <span class="font-bold text-slate-100">Manuales en español</span>
+                <span class="text-sm text-slate-400">Los manuales de las máquinas, traducidos y resumidos.</span>
+              </span>
+            </button>
+            <button onclick="go('wiki')" class="text-left bg-slate-900 border border-slate-800 rounded-2xl p-5 flex gap-4 items-start hover:bg-slate-800/70 transition-colors">
+              <span class="w-12 h-12 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center flex-shrink-0"><svg class="ico" style="width:24px;height:24px"><use href="#i-brain"/></svg></span>
+              <span class="flex flex-col gap-1">
+                <span class="font-bold text-slate-100">Saber de planta</span>
+                <span class="text-sm text-slate-400">Trucos y soluciones que ya probaron tus compañeros.</span>
+              </span>
+            </button>
+            <button onclick="go('repuestos')" class="text-left bg-slate-900 border border-slate-800 rounded-2xl p-5 flex gap-4 items-start hover:bg-slate-800/70 transition-colors sm:col-span-2">
+              <span class="w-12 h-12 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center flex-shrink-0"><svg class="ico" style="width:24px;height:24px"><use href="#i-box"/></svg></span>
+              <span class="flex flex-col gap-1">
+                <span class="font-bold text-slate-100">Pedir un repuesto</span>
+                <span class="text-sm text-slate-400">Repuestos de proveedores conveniados, con precio y tiempo de entrega.</span>
+              </span>
+            </button>
+          </div>
+
+          <!-- Estado de planta -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+            <p class="text-xs uppercase label font-semibold text-slate-400">Hoy en planta</p>
+            <div class="flex items-start gap-3">
+              <span class="mt-1.5 w-2.5 h-2.5 rounded-full bg-red-500 pulse-dot flex-shrink-0"></span>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-slate-100">Inyectora KraussMaffei KM-150 detenida</p>
+                <p class="text-sm text-slate-400">Línea 3 · Código de falla <span class="font-mono text-techOrange-400">E-304</span> (presión hidráulica)</p>
+              </div>
+            </div>
+            <button onclick="go('raul'); setTimeout(()=>ask('Error E-304 Inyectora KraussMaffei'),250)" class="self-start bg-techOrange-600 hover:bg-techOrange-500 text-white font-semibold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 active:scale-95 transition">
+              Ver cómo resolverlo
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col gap-1">
+              <span class="text-xs text-slate-400 flex items-center gap-1.5"><svg class="ico text-emerald-400" style="width:15px;height:15px"><use href="#i-clock"/></svg>Tiempo ahorrado hoy</span>
+              <span class="text-xl font-bold text-emerald-400" style="font-variant-numeric: tabular-nums">1 h 45 min</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col gap-1">
+              <span class="text-xs text-slate-400">Costo de paradas</span>
+              <span class="text-xl font-bold text-blue-400" style="font-variant-numeric: tabular-nums">−15,2 %</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 -mt-3">Cifras de ejemplo para la demostración.</p>
+        </div>
+      </section>
+
+      <!-- ===== R.A.U.L. ===== -->
+      <section id="view-raul" class="gutter py-4" hidden>
+        <div class="max-w-3xl mx-auto flex flex-col gap-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-11 h-11 rounded-xl bg-techOrange-500/20 text-techOrange-500 border border-techOrange-500/30 flex items-center justify-center font-black flex-shrink-0">R</span>
+              <div class="min-w-0">
+                <h2 class="font-bold text-slate-100">Asistente R.A.U.L.</h2>
+                <p class="text-xs text-slate-400"><b class="text-slate-300">R</b>ecupera · <b class="text-slate-300">A</b>naliza · <b class="text-slate-300">U</b>tiliza · <b class="text-slate-300">L</b>ocaliza</p>
+              </div>
+            </div>
+            <button onclick="resetChat()" class="text-sm bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 px-3 py-2 rounded-xl flex-shrink-0">Empezar de nuevo</button>
+          </div>
+
+          <div id="chat" class="flex flex-col gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 min-h-[45vh]" aria-live="polite"></div>
+
+          <form id="chatForm" class="sticky z-30 flex items-center gap-2 bg-slate-900/95 backdrop-blur border border-slate-700 rounded-2xl p-2 bottom-[calc(76px+env(safe-area-inset-bottom,0px))] md:bottom-4">
+            <button type="button" onclick="fakePhoto()" class="p-3 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-xl" aria-label="Enviar foto de la falla (simulado)">
+              <svg class="ico"><use href="#i-camera"/></svg>
+            </button>
+            <label for="chatInput" class="sr-only">Escribe tu consulta</label>
+            <input id="chatInput" type="text" autocomplete="off" placeholder="Ej: la prensa pierde presión" class="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-3 text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-techOrange-500">
+            <button type="submit" class="bg-techOrange-600 hover:bg-techOrange-500 text-white p-3 px-4 rounded-xl font-bold flex items-center gap-2 active:scale-95 transition" aria-label="Enviar">
+              <svg class="ico"><use href="#i-send"/></svg><span class="hidden sm:inline">Enviar</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ===== MANUALES ===== -->
+      <section id="view-manuales" class="gutter py-6" hidden>
+        <div class="max-w-5xl mx-auto flex flex-col gap-4">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-xl font-bold text-slate-100">Manuales en español</h2>
+            <p class="text-sm text-slate-400">R.A.U.L. tradujo y resumió los manuales originales, que venían en inglés o incompletos.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="manualList"></div>
+
+          <div id="manualViewer" class="bg-slate-900 border border-slate-700 rounded-2xl p-4 flex flex-col gap-3 scroll-mt-24" hidden>
+            <div class="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <h3 id="manualTitle" class="font-bold text-slate-100"></h3>
+              <button onclick="document.getElementById('manualViewer').hidden=true" class="p-2 text-slate-400 hover:text-slate-100 rounded-lg" aria-label="Cerrar manual"><svg class="ico"><use href="#i-x"/></svg></button>
+            </div>
+            <div id="manualBody" class="flex flex-col gap-3 text-sm"></div>
+          </div>
+
+          <button onclick="openModal('sourceModal')" class="self-start bg-slate-900 hover:bg-slate-800 border border-dashed border-slate-600 text-slate-300 px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2">
+            <svg class="ico"><use href="#i-plus"/></svg>Agregar un manual nuevo
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== SABER DE PLANTA ===== -->
+      <section id="view-wiki" class="gutter py-6" hidden>
+        <div class="max-w-3xl mx-auto flex flex-col gap-4">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-xl font-bold text-slate-100">Saber de planta</h2>
+            <p class="text-sm text-slate-400">Para que el conocimiento no quede en la cabeza de pocos. Si resolviste algo, déjalo anotado.</p>
+          </div>
+          <button onclick="openModal('noteModal')" class="bg-purple-600 hover:bg-purple-500 text-white font-semibold px-4 py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition">
+            <svg class="ico"><use href="#i-plus"/></svg>Anotar una solución
+          </button>
+          <div class="relative">
+            <svg class="ico absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"><use href="#i-search"/></svg>
+            <label for="wikiSearch" class="sr-only">Buscar en el saber de planta</label>
+            <input id="wikiSearch" type="search" oninput="renderWiki()" placeholder="Buscar: E-304, purga, Mariano…" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500">
+          </div>
+          <div id="wikiList" class="flex flex-col gap-3"></div>
+        </div>
+      </section>
+
+      <!-- ===== REPUESTOS ===== -->
+      <section id="view-repuestos" class="gutter py-6" hidden>
+        <div class="max-w-5xl mx-auto flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <div class="flex flex-col gap-1">
+              <h2 class="text-xl font-bold text-slate-100">Repuestos</h2>
+              <p class="text-sm text-slate-400">Proveedores conveniados con PMI, con entrega directa en planta.</p>
+            </div>
+            <span class="self-start sm:self-auto text-xs font-semibold bg-amber-950/60 border border-amber-800/60 text-amber-300 px-3 py-1.5 rounded-full">Descuento Pyme activo</span>
+          </div>
+          <div id="partList" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- BARRA INFERIOR (celular) -->
+<nav class="bottom-nav md:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-900 border-t border-slate-800 grid grid-cols-5" aria-label="Secciones">
+  <button class="nav-btn flex flex-col items-center gap-1 pt-2.5 pb-1 text-slate-400 text-[11px] font-semibold" data-tab="inicio" onclick="go('inicio')"><svg class="ico" style="width:24px;height:24px"><use href="#i-home"/></svg>Inicio</button>
+  <button class="nav-btn flex flex-col items-center gap-1 pt-2.5 pb-1 text-slate-400 text-[11px] font-semibold" data-tab="raul" onclick="go('raul')"><svg class="ico" style="width:24px;height:24px"><use href="#i-chat"/></svg>R.A.U.L.</button>
+  <button class="nav-btn flex flex-col items-center gap-1 pt-2.5 pb-1 text-slate-400 text-[11px] font-semibold" data-tab="manuales" onclick="go('manuales')"><svg class="ico" style="width:24px;height:24px"><use href="#i-book"/></svg>Manuales</button>
+  <button class="nav-btn flex flex-col items-center gap-1 pt-2.5 pb-1 text-slate-400 text-[11px] font-semibold" data-tab="wiki" onclick="go('wiki')"><svg class="ico" style="width:24px;height:24px"><use href="#i-brain"/></svg>Saber</button>
+  <button class="nav-btn flex flex-col items-center gap-1 pt-2.5 pb-1 text-slate-400 text-[11px] font-semibold" data-tab="repuestos" onclick="go('repuestos')"><svg class="ico" style="width:24px;height:24px"><use href="#i-box"/></svg>Repuestos</button>
+</nav>
+
+<!-- MODAL: NUEVA NOTA -->
+<div id="noteModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4" hidden>
+  <form id="noteForm" class="bg-slate-900 border border-slate-700 w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-5 flex flex-col gap-4 max-h-[90vh] overflow-y-auto" style="padding-bottom: max(20px, env(safe-area-inset-bottom, 0px))">
+    <div class="flex items-center justify-between">
+      <h3 class="font-bold text-lg text-slate-100">Anotar una solución</h3>
+      <button type="button" onclick="closeModal('noteModal')" class="p-2 text-slate-400 hover:text-slate-100" aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label for="noteTitle" class="text-sm font-medium text-slate-300">¿Qué falla resolviste?</label>
+      <input id="noteTitle" type="text" placeholder="Ej: Vibración en motor de bomba" class="bg-slate-950 border border-slate-700 rounded-xl p-3 text-base text-slate-100 focus:outline-none focus:border-purple-500">
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label for="noteMachine" class="text-sm font-medium text-slate-300">¿En qué máquina? <span class="text-slate-500">(opcional)</span></label>
+      <input id="noteMachine" type="text" placeholder="Ej: Inyectora KM-150" class="bg-slate-950 border border-slate-700 rounded-xl p-3 text-base text-slate-100 focus:outline-none focus:border-purple-500">
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label for="noteAuthor" class="text-sm font-medium text-slate-300">Tu nombre <span class="text-slate-500">(opcional)</span></label>
+      <input id="noteAuthor" type="text" placeholder="Ej: Ana P." class="bg-slate-950 border border-slate-700 rounded-xl p-3 text-base text-slate-100 focus:outline-none focus:border-purple-500">
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label for="noteContent" class="text-sm font-medium text-slate-300">¿Qué hiciste para solucionarlo?</label>
+      <textarea id="noteContent" rows="4" placeholder="Cuéntalo como se lo explicarías a un compañero." class="bg-slate-950 border border-slate-700 rounded-xl p-3 text-base text-slate-100 focus:outline-none focus:border-purple-500"></textarea>
+    </div>
+    <p id="noteError" class="text-sm text-red-400" hidden>Completa qué falla resolviste y qué hiciste.</p>
+    <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3.5 rounded-xl">Guardar en Saber de planta</button>
+  </form>
+</div>
+
+<!-- MODAL: PEDIDO DE REPUESTO -->
+<div id="quoteModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4" hidden>
+  <form id="quoteForm" class="bg-slate-900 border border-slate-700 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 flex flex-col gap-4" style="padding-bottom: max(20px, env(safe-area-inset-bottom, 0px))">
+    <div class="flex items-center justify-between">
+      <h3 class="font-bold text-lg text-slate-100">Pedir repuesto</h3>
+      <button type="button" onclick="closeModal('quoteModal')" class="p-2 text-slate-400 hover:text-slate-100" aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button>
+    </div>
+    <div id="quotePart" class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-bold text-techOrange-400"></div>
+    <div class="flex items-center justify-between gap-3">
+      <span class="text-sm font-medium text-slate-300">Cantidad</span>
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="qty(-1)" class="w-11 h-11 rounded-xl bg-slate-800 text-xl font-bold text-slate-200" aria-label="Menos">−</button>
+        <output id="quoteQty" class="w-10 text-center text-lg font-bold" style="font-variant-numeric: tabular-nums">1</output>
+        <button type="button" onclick="qty(1)" class="w-11 h-11 rounded-xl bg-slate-800 text-xl font-bold text-slate-200" aria-label="Más">+</button>
+      </div>
+    </div>
+    <div class="flex justify-between text-sm text-slate-400 border-t border-slate-800 pt-3">
+      <span>Total estimado</span><span id="quoteTotal" class="font-bold text-slate-100" style="font-variant-numeric: tabular-nums"></span>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label for="quoteNote" class="text-sm font-medium text-slate-300">Nota para el proveedor <span class="text-slate-500">(opcional)</span></label>
+      <textarea id="quoteNote" rows="2" placeholder="Ej: Entregar en Línea 3, turno tarde" class="bg-slate-950 border border-slate-700 rounded-xl p-3 text-base text-slate-100 focus:outline-none focus:border-techOrange-500"></textarea>
+    </div>
+    <button type="submit" class="bg-techOrange-600 hover:bg-techOrange-500 text-white font-bold py-3.5 rounded-xl">Enviar pedido</button>
+    <p class="text-xs text-slate-500 text-center">Demo: no se envía ningún pedido real.</p>
+  </form>
+</div>
+
+<!-- MODAL: AGREGAR MANUAL -->
+<div id="sourceModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4" hidden>
+  <form id="sourceForm" class="bg-slate-900 border border-slate-700 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 flex flex-col gap-4" style="padding-bottom: max(20px, env(safe-area-inset-bottom, 0px))">
+    <div class="flex items-center justify-between">
+      <h3 class="font-bold text-lg text-slate-100">Agregar un manual</h3>
+      <button type="button" onclick="closeModal('sourceModal')" class="p-2 text-slate-400 hover:text-slate-100" aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label for="sourceTitle" class="text-sm font-medium text-slate-300">¿De qué máquina es?</label>
+      <input id="sourceTitle" type="text" placeholder="Ej: Torno CNC Daewoo Puma" class="bg-slate-950 border border-slate-700 rounded-xl p-3 text-base text-slate-100 focus:outline-none focus:border-blue-500">
+    </div>
+    <label for="sourceFile" class="border-2 border-dashed border-slate-700 rounded-xl p-6 flex flex-col items-center gap-1 text-slate-400 hover:border-blue-500 cursor-pointer bg-slate-950 text-center">
+      <span class="font-medium text-sm" id="sourceFileName">Toca para elegir el archivo (PDF o Word)</span>
+      <span class="text-xs text-slate-500">Hasta 50 MB</span>
+    </label>
+    <input id="sourceFile" type="file" accept=".pdf,.doc,.docx" class="sr-only" onchange="document.getElementById('sourceFileName').textContent = this.files[0] ? this.files[0].name : 'Toca para elegir el archivo (PDF o Word)'">
+    <label class="flex items-center gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 text-sm text-slate-300">
+      <input id="sourceTranslate" type="checkbox" checked class="w-5 h-5 accent-blue-600">Que R.A.U.L. lo traduzca y resuma al español
+    </label>
+    <p id="sourceError" class="text-sm text-red-400" hidden>Escribe de qué máquina es el manual.</p>
+    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl">Subir manual</button>
+  </form>
+</div>
+
+<!-- AVISO -->
+<div id="toast" role="status" class="fixed z-[70] left-1/2 -translate-x-1/2 bottom-[calc(92px+env(safe-area-inset-bottom,0px))] md:bottom-6 w-[calc(100%-32px)] max-w-sm bg-slate-800 border border-techOrange-500 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm transition-all duration-300 opacity-0 translate-y-4 pointer-events-none">
+  <svg class="ico text-techOrange-500"><use href="#i-check"/></svg><span id="toastText"></span>
+</div>
+
+<script>
+  /* ---------- Datos de ejemplo ---------- */
+  const MANUALS = [
+    { id:'km150', name:'Inyectora KraussMaffei KM-150', tag:'Traducido', size:'PDF · 14,2 MB', updated:'hace 3 días',
+      desc:'Hidráulica, presiones y lista de alarmas en castellano.',
+      summary:'Para la falla de presión <b>E-304</b>, revisa los solenoides Y1 e Y2 en la parte trasera del bloque manifold B2.',
+      chapter:'Capítulo 4.3 · Ajustes de presión proporcional',
+      steps:['Corta la tensión de 24 VDC antes de sacar la bobina del solenoide.','Revisa que el orificio del pistón interno no esté tapado por virutas o aceite sucio.','Vuelve a montar la bobina y prueba la presión en vacío.'] },
+    { id:'schuler', name:'Prensa Hidráulica Schuler 400T', tag:'Traducido', size:'PDF · 22,8 MB', updated:'hace 1 semana',
+      desc:'Circuito neumático-hidráulico y purga rápida.',
+      summary:'La purga completa del circuito lleva unas 2 horas. Existe un purgador secundario en la tapa trasera que permite hacerlo sin parar la línea.',
+      chapter:'Capítulo 7.1 · Purga del circuito',
+      steps:['Ubica el purgador secundario en la tapa trasera.','Ábrelo con llave Allen de 5 mm hasta que salga aceite sin burbujas.','Ciérralo y verifica la presión en el manómetro principal.'] },
+    { id:'kuka', name:'Robot KUKA KR-210', tag:'Resumen', size:'PDF · 8,1 MB', updated:'12 oct',
+      desc:'Puesta a cero de ejes y errores del servodrive.',
+      summary:'La mayoría de los errores de servodrive se resuelven reiniciando el armario y volviendo a referenciar los ejes.',
+      chapter:'Capítulo 3.2 · Puesta a cero de ejes',
+      steps:['Lleva el robot a la posición de mantenimiento.','En el panel, entra a Puesta en servicio › Ajustar.','Referencia los ejes de a uno, empezando por A1.'] }
+  ];
+
+  const PARTS = [
+    { name:'Válvula proporcional hidráulica Y2', brand:'Bosch Rexroth', code:'4WE6E6X/EG24N9K4', fits:'Compatible con KM-150', price:420, stock:'En stock (2)', stockOk:true, eta:'24 h en planta' },
+    { name:'Kit de juntas para válvula neumática', brand:'SMC Pneumatics', code:'SMC-K-3341', fits:'Resiste altas temperaturas', price:85, stock:'En stock (5)', stockOk:true, eta:'Mismo día (4 h)' },
+    { name:'Módulo PLC S7-1200, 16 entradas', brand:'Siemens', code:'6ES7221-1BH32-0XB0', fits:'Entradas digitales 24 VDC', price:210, stock:'A pedido', stockOk:false, eta:'48 h' }
+  ];
+
+  const BASE_NOTES = [
+    { author:'Raúl Domínguez', initials:'RD', role:'Técnico mecánico', when:'hace 2 semanas', machine:'Inyectora KM-150', badge:'Solución probada', likes:4,
+      title:'Falsa alarma E-304 en días de calor (más de 30 °C)',
+      body:'Con calor, el sensor de presión de aceite junta suciedad por condensación y salta el E-304. No cambien la bomba. Limpien el sensor con limpia contactos de secado rápido y calibren el potenciómetro de Y2 a 4,2 V.' },
+    { author:'Mariano Gómez', initials:'MG', role:'Especialista electrónico', when:'hace 1 mes', machine:'Prensa Schuler 400T', badge:'Truco de calibración', likes:7,
+      title:'Purga rápida de la válvula proporcional',
+      body:'Para no perder 2 horas purgando todo el circuito, usen el purgador secundario de la tapa trasera con llave Allen de 5 mm. Se resuelve en 10 minutos sin parar toda la línea.' }
+  ];
+
+  /* ---------- Navegación ---------- */
+  const VIEWS = ['inicio','raul','manuales','wiki','repuestos'];
+  function go(name){
+    if(!VIEWS.includes(name)) name = 'inicio';
+    VIEWS.forEach(v => document.getElementById('view-'+v).hidden = (v !== name));
+    document.querySelectorAll('[data-tab]').forEach(b => b.dataset.tab === name ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+    if(location.hash !== '#'+name){ try { history.replaceState(null,'','#'+name); } catch(e){} }
+    window.scrollTo({ top:0 });
+  }
+  window.addEventListener('hashchange', () => go(location.hash.slice(1)));
+
+  /* ---------- Aviso ---------- */
+  let toastTimer;
+  function toast(msg){
+    const t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = msg;
+    t.classList.remove('opacity-0','translate-y-4');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.add('opacity-0','translate-y-4'), 3200);
+  }
+
+  /* ---------- Modales ---------- */
+  function openModal(id){ document.getElementById(id).hidden = false; }
+  function closeModal(id){ document.getElementById(id).hidden = true; }
+  document.querySelectorAll('[id$="Modal"]').forEach(m => m.addEventListener('click', e => { if(e.target === m) m.hidden = true; }));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') document.querySelectorAll('[id$="Modal"]').forEach(m => m.hidden = true); });
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* ---------- R.A.U.L. ---------- */
+  const SUGGESTIONS = [
+    ['Error E-304 Inyectora KraussMaffei','🚨 Error E-304 en la inyectora'],
+    ['Presión neumática intermitente en Línea 2','⚠️ Baja la presión neumática'],
+    ['¿Cómo calibrar la válvula Y2?','🔧 Calibrar válvula Y2'],
+    ['Necesito purgar la prensa Schuler','🛢️ Purgar la prensa']
+  ];
+
+  const chips = list => `<div class="flex flex-wrap gap-2 pt-1">${list.map(([q,l]) =>
+    `<button onclick="ask('${q.replace(/'/g,"\\'")}')" class="text-sm bg-slate-950 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-2 rounded-xl text-left">${l}</button>`).join('')}</div>`;
+
+  const actions = list => `<div class="flex flex-wrap gap-2 pt-2">${list.map(([fn,l,cls]) =>
+    `<button onclick="${fn}" class="${cls} px-3.5 py-2.5 rounded-xl text-sm font-semibold">${l}</button>`).join('')}</div>`;
+
+  const BTN_PART = 'bg-amber-600 hover:bg-amber-500 text-white';
+  const BTN_SEC = 'bg-slate-950 hover:bg-slate-700 border border-slate-700 text-slate-200';
+
+  const ANSWERS = [
+    { keys:['e-304','e304','kraussmaffei','inyectora','km-150'], html:`
+      <div class="p-3 bg-red-950/60 border border-red-800 rounded-xl text-red-300 font-semibold text-sm flex gap-2 items-start">
+        <svg class="ico mt-0.5"><use href="#i-alert"/></svg><span>Error E-304: la presión hidráulica está fuera de rango.</span>
+      </div>
+      <p>Encontré esto para la Inyectora KM-150. Sigue los pasos en orden:</p>
+      <ol class="list-decimal pl-5 flex flex-col gap-2 text-slate-300">
+        <li><b class="text-slate-100">Mira la temperatura del ambiente.</b> Si hace más de 30 °C, puede ser una falsa alarma (lo anotó Raúl hace 2 semanas).</li>
+        <li><b class="text-slate-100">Limpia el sensor de presión</b> con limpia contactos de secado rápido.</li>
+        <li><b class="text-slate-100">Calibra la válvula Y2 a 4,2 V.</b></li>
+        <li>Si sigue fallando, revisa que el solenoide de Y2 reciba 24 VDC (manual, capítulo 4.3).</li>
+      </ol>
+      <p class="text-sm text-emerald-300">💡 No hace falta cambiar la bomba.</p>
+      ${actions([["go('wiki')",'Ver la nota de Raúl',BTN_SEC],["openManual('km150')",'Abrir el manual',BTN_SEC],["openQuote(0)",'Pedir válvula Y2',BTN_PART],["shareWA()",'Avisar al equipo por WhatsApp',BTN_SEC]])}` },
+    { keys:['y2','calibr','válvula','valvula'], html:`
+      <p class="font-semibold text-techOrange-400">Calibrar la válvula proporcional Y2</p>
+      <ol class="list-decimal pl-5 flex flex-col gap-2 text-slate-300">
+        <li>Con la máquina detenida, ubica el potenciómetro de Y2 en el bloque manifold B2.</li>
+        <li>Mide con el tester entre la salida y masa.</li>
+        <li>Gira despacio hasta leer <b class="text-slate-100">4,2 V</b>.</li>
+        <li>Arranca en vacío y confirma que no salte el E-304.</li>
+      </ol>
+      ${actions([["openManual('km150')",'Abrir el manual',BTN_SEC],["openQuote(0)",'Pedir válvula Y2',BTN_PART]])}` },
+    { keys:['purg','schuler','prensa'], html:`
+      <p class="font-semibold text-techOrange-400">Purga rápida de la prensa Schuler 400T</p>
+      <p>Mariano encontró una forma de hacerlo en 10 minutos en lugar de 2 horas:</p>
+      <ol class="list-decimal pl-5 flex flex-col gap-2 text-slate-300">
+        <li>Busca el purgador secundario en la tapa trasera.</li>
+        <li>Ábrelo con llave Allen de 5 mm hasta que el aceite salga sin burbujas.</li>
+        <li>Ciérralo y controla el manómetro principal.</li>
+      </ol>
+      <p class="text-sm text-emerald-300">💡 No hace falta parar toda la línea.</p>
+      ${actions([["go('wiki')",'Ver la nota de Mariano',BTN_SEC],["openManual('schuler')",'Abrir el manual',BTN_SEC]])}` },
+    { keys:['neum','presión','presion','aire','línea 2','linea 2'], html:`
+      <p class="font-semibold text-techOrange-400">Presión neumática que sube y baja (Línea 2)</p>
+      <p>Según el registro de mantenimiento, el filtro de la unidad FRL de entrada no se cambia hace <b>60 días</b>.</p>
+      <ol class="list-decimal pl-5 flex flex-col gap-2 text-slate-300">
+        <li>Drena el agua acumulada con la purga manual debajo del vaso del filtro.</li>
+        <li>Si el filtro está oscuro, cámbialo.</li>
+        <li>Si persiste, revisa las juntas de la válvula neumática.</li>
+      </ol>
+      ${actions([["openQuote(1)",'Pedir kit de juntas',BTN_PART]])}` },
+    { keys:['kuka','robot','servo','eje'], html:`
+      <p class="font-semibold text-techOrange-400">Robot KUKA KR-210</p>
+      <p>La mayoría de los errores del servodrive se resuelven reiniciando el armario y volviendo a poner a cero los ejes, empezando por A1.</p>
+      ${actions([["openManual('kuka')",'Ver los pasos en el manual',BTN_SEC]])}` },
+    { keys:['foto'], html:`
+      <p class="font-semibold text-techOrange-400">Análisis de la foto (simulado)</p>
+      <p>Reconocí la placa: <b>Válvula Y2 · Bosch Rexroth 4WE6E6X</b>. Se ven restos de aceite en el conector, lo que coincide con la falla E-304.</p>
+      ${actions([["ask('Error E-304 Inyectora KraussMaffei')",'Ver cómo resolver E-304',BTN_SEC],["openQuote(0)",'Pedir válvula Y2',BTN_PART]])}` },
+    { keys:['repuesto','comprar','pedir','plc','siemens'], html:`
+      <p>Puedes ver precios y tiempos de entrega de los proveedores conveniados en Repuestos.</p>
+      ${actions([["go('repuestos')",'Ir a Repuestos',BTN_PART]])}` }
+  ];
+
+  function answerFor(q){
+    const l = q.toLowerCase();
+    const hit = ANSWERS.find(a => a.keys.some(k => l.includes(k)));
+    if(hit) return hit.html;
+    return `<p>Busqué "<i>${esc(q)}</i>" en los manuales y en el saber de planta, pero en esta demo no tengo una respuesta para eso.</p>
+      <p class="text-slate-300">Prueba con alguna de estas consultas:</p>${chips(SUGGESTIONS)}`;
+  }
+
+  const bubbleAI = html => `<div class="flex gap-3 max-w-2xl">
+      <span class="w-8 h-8 rounded-lg bg-techOrange-600/20 border border-techOrange-500/40 text-techOrange-400 flex items-center justify-center flex-shrink-0 font-bold text-sm">R</span>
+      <div class="min-w-0 bg-slate-800 border border-slate-700/80 rounded-2xl rounded-tl-none p-4 text-slate-200 flex flex-col gap-2.5 leading-relaxed">${html}</div></div>`;
+
+  function welcome(){
+    document.getElementById('chat').innerHTML = bubbleAI(`
+      <p class="font-semibold text-slate-100">Hola, soy R.A.U.L. 👋</p>
+      <p>Cuéntame qué le pasa a la máquina con tus palabras, o toca una de estas consultas de ejemplo:</p>${chips(SUGGESTIONS)}`);
+  }
+  function resetChat(){ welcome(); toast('Consulta nueva'); }
+
+  let busy = false;
+  function ask(q){
+    if(busy || !q.trim()) return;
+    busy = true;
+    const chat = document.getElementById('chat');
+    chat.insertAdjacentHTML('beforeend', `<div class="flex justify-end"><div class="max-w-[85%] bg-techOrange-600 text-white rounded-2xl rounded-tr-none px-4 py-3">${esc(q)}</div></div>`);
+    chat.insertAdjacentHTML('beforeend', `<div id="typing" class="flex gap-3">${'<span class="w-8 h-8 rounded-lg bg-techOrange-600/20 border border-techOrange-500/40 text-techOrange-400 flex items-center justify-center font-bold text-sm">R</span>'}<div class="typing bg-slate-800 border border-slate-700 rounded-2xl px-4 py-3.5"><span></span><span></span><span></span></div></div>`);
+    scrollChat();
+    setTimeout(() => {
+      document.getElementById('typing')?.remove();
+      chat.insertAdjacentHTML('beforeend', bubbleAI(answerFor(q)));
+      scrollChat(); busy = false;
+    }, 900);
+  }
+  function scrollChat(){
+    const last = document.getElementById('chat').lastElementChild;
+    last && last.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  document.getElementById('chatForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const i = document.getElementById('chatInput');
+    ask(i.value); i.value = ''; i.blur();
+  });
+  function fakePhoto(){ toast('Demo: simulamos una foto de la válvula Y2'); ask('Analizar foto de la válvula Y2'); }
+
+  function shareWA(){
+    const t = encodeURIComponent('Hola equipo, estoy revisando el E-304 en la Inyectora KM-150 con R.A.U.L. ¿Alguien tiene una válvula Y2 de repuesto?');
+    const a = document.createElement('a');
+    a.href = 'https://api.whatsapp.com/send?text=' + t; a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  /* ---------- Manuales ---------- */
+  function renderManuals(){
+    document.getElementById('manualList').innerHTML = MANUALS.map(m => `
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-semibold bg-blue-950 text-blue-300 border border-blue-800 px-2 py-0.5 rounded-full">${m.tag}</span>
+          <span class="text-xs text-slate-500">${m.updated}</span>
+        </div>
+        <div class="flex flex-col gap-1 flex-1">
+          <h3 class="font-bold text-slate-100">${m.name}</h3>
+          <p class="text-sm text-slate-400">${m.desc}</p>
+        </div>
+        <div class="flex items-center justify-between gap-2 pt-3 border-t border-slate-800">
+          <span class="text-xs text-slate-500 font-mono">${m.size}</span>
+          <button onclick="openManual('${m.id}')" class="bg-techOrange-600 hover:bg-techOrange-500 text-white text-sm px-4 py-2 rounded-xl font-semibold">Abrir</button>
+        </div>
+      </div>`).join('');
+  }
+  function openManual(id){
+    const m = MANUALS.find(x => x.id === id); if(!m) return;
+    go('manuales');
+    document.getElementById('manualTitle').textContent = m.name;
+    document.getElementById('manualBody').innerHTML = `
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col gap-1">
+        <p class="font-bold text-techOrange-400">Resumen de R.A.U.L.</p>
+        <p class="text-slate-300 leading-relaxed">${m.summary}</p>
+      </div>
+      <div class="border-l-2 border-slate-700 pl-4 flex flex-col gap-2">
+        <p class="font-bold text-slate-100">${m.chapter}</p>
+        <ol class="list-decimal pl-5 flex flex-col gap-1.5 text-slate-300">${m.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+      </div>
+      <p class="text-xs text-slate-500">Traducido del manual original en inglés.</p>`;
+    const v = document.getElementById('manualViewer');
+    v.hidden = false;
+    setTimeout(() => v.scrollIntoView({ behavior:'smooth', block:'start' }), 50);
+  }
+  document.getElementById('sourceForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const t = document.getElementById('sourceTitle').value.trim();
+    document.getElementById('sourceError').hidden = !!t;
+    if(!t) return;
+    MANUALS.push({ id:'m'+Date.now(), name:esc(t), tag:'Procesando…', size:'Recién subido', updated:'ahora',
+      desc:'R.A.U.L. lo está traduciendo y resumiendo.', summary:'El resumen estará listo en unos minutos (simulado en esta demo).',
+      chapter:'Procesando', steps:['Traduciendo al español…'] });
+    renderManuals(); closeModal('sourceModal'); e.target.reset();
+    document.getElementById('sourceFileName').textContent = 'Toca para elegir el archivo (PDF o Word)';
+    toast('Manual agregado. R.A.U.L. lo está traduciendo.');
+  });
+
+  /* ---------- Saber de planta ---------- */
+  const STORE = 'pmi-notas';
+  let myNotes = [];
+  try { myNotes = JSON.parse(localStorage.getItem(STORE) || '[]'); } catch(e) { myNotes = []; }
+  const liked = new Set();
+
+  function renderWiki(){
+    const f = document.getElementById('wikiSearch').value.toLowerCase().trim();
+    const all = [...myNotes, ...BASE_NOTES];
+    const list = all.filter(n => !f || [n.title,n.body,n.author,n.machine].join(' ').toLowerCase().includes(f));
+    document.getElementById('wikiList').innerHTML = list.length ? list.map(n => {
+      const idx = all.indexOf(n); const on = liked.has(idx);
+      return `<article class="bg-slate-900 border ${n.mine ? 'border-purple-800' : 'border-slate-800'} rounded-2xl p-4 flex flex-col gap-2.5">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-9 h-9 rounded-full bg-techOrange-600/25 text-techOrange-400 flex items-center justify-center font-bold text-sm flex-shrink-0">${n.initials}</span>
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-slate-200">${n.author} <span class="text-slate-500 font-normal">· ${n.role}</span></p>
+              <p class="text-xs text-slate-400">${n.when} · ${n.machine}</p>
+            </div>
+          </div>
+          <span class="text-xs bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded-full">${n.badge}</span>
+        </div>
+        <h3 class="font-bold text-slate-100">${n.title}</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">${n.body}</p>
+        <div class="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
+          <button onclick="like(${idx})" class="flex items-center gap-1.5 text-sm px-3 py-2 rounded-xl ${on ? 'bg-purple-900/60 text-purple-200' : 'text-slate-400 hover:bg-slate-800'}">
+            <svg class="ico" style="width:16px;height:16px"><use href="#i-thumb"/></svg>Me sirvió · ${n.likes + (on?1:0)}
+          </button>
+        </div>
+      </article>`; }).join('')
+      : `<p class="text-slate-400 text-sm p-4 text-center">No hay notas que coincidan con tu búsqueda.</p>`;
+  }
+  function like(i){ liked.has(i) ? liked.delete(i) : liked.add(i); renderWiki(); }
+
+  document.getElementById('noteForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const title = document.getElementById('noteTitle').value.trim();
+    const body = document.getElementById('noteContent').value.trim();
+    document.getElementById('noteError').hidden = !!(title && body);
+    if(!title || !body) return;
+    const author = document.getElementById('noteAuthor').value.trim() || 'Visitante';
+    const initials = author.split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
+    myNotes.unshift({ mine:true, author:esc(author), initials:esc(initials), role:'Tu nota', when:'Recién', machine:esc(document.getElementById('noteMachine').value.trim() || 'General'),
+      badge:'Nueva', likes:0, title:esc(title), body:esc(body) });
+    try { localStorage.setItem(STORE, JSON.stringify(myNotes)); } catch(err) {}
+    e.target.reset(); closeModal('noteModal');
+    document.getElementById('wikiSearch').value = '';
+    renderWiki(); toast('Solución guardada en Saber de planta');
+  });
+
+  /* ---------- Repuestos ---------- */
+  let current = 0, count = 1;
+  function renderParts(){
+    document.getElementById('partList').innerHTML = PARTS.map((p,i) => `
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs bg-slate-950 text-slate-400 px-2 py-0.5 rounded border border-slate-800">${p.brand}</span>
+          <span class="text-xs font-bold ${p.stockOk ? 'text-emerald-400' : 'text-amber-400'}">${p.stock}</span>
+        </div>
+        <div class="flex flex-col gap-1 flex-1">
+          <h3 class="font-bold text-slate-100">${p.name}</h3>
+          <p class="text-xs text-slate-400"><span class="font-mono">${p.code}</span> · ${p.fits}</p>
+        </div>
+        <dl class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm flex flex-col gap-1.5">
+          <div class="flex justify-between"><dt class="text-slate-400">Precio convenio</dt><dd class="font-bold text-slate-100" style="font-variant-numeric: tabular-nums">USD ${p.price}</dd></div>
+          <div class="flex justify-between"><dt class="text-slate-400">Entrega</dt><dd class="font-semibold ${p.stockOk ? 'text-emerald-400' : 'text-amber-400'}">${p.eta}</dd></div>
+        </dl>
+        <button onclick="openQuote(${i})" class="${i===0 ? 'bg-techOrange-600 hover:bg-techOrange-500 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700'} font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+          <svg class="ico"><use href="#i-cart"/></svg>Pedir
+        </button>
+      </div>`).join('');
+  }
+  function openQuote(i){
+    current = i; count = 1;
+    document.getElementById('quotePart').textContent = PARTS[i].name + ' · ' + PARTS[i].brand;
+    updQuote(); openModal('quoteModal');
+  }
+  function qty(d){ count = Math.max(1, Math.min(20, count + d)); updQuote(); }
+  function updQuote(){
+    document.getElementById('quoteQty').textContent = count;
+    document.getElementById('quoteTotal').textContent = 'USD ' + (PARTS[current].price * count).toLocaleString('es-AR');
+  }
+  document.getElementById('quoteForm').addEventListener('submit', e => {
+    e.preventDefault(); closeModal('quoteModal'); e.target.reset();
+    toast('Pedido enviado a ' + PARTS[current].brand + ' (demo)');
+  });
+
+  /* ---------- Inicio ---------- */
+  welcome(); renderManuals(); renderWiki(); renderParts();
+  go(location.hash.slice(1) || 'inicio');
+</script>
+
+</body>
+</html>
